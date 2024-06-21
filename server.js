@@ -14,3 +14,7 @@ const pool = new Pool({user: 'postgres',
 pool.connect();
 
 console.log('Connected to the employees_db database!')
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

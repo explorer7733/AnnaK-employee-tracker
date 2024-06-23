@@ -1,5 +1,19 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
+const { Pool } = require("pg");
+
+// Connect to database
+const pool = new Pool(
+  {
+    user: 'postgres',
+    password: '',
+    host: 'localhost',
+    database: 'employees_db'
+  },
+)
+pool.connect();
+
+console.log('Connected to the employees_db database!')
 
 // List of questions
 const questionsList = () => {
@@ -45,7 +59,7 @@ const viewAllDepartments = () => {
     pool.query(query, (err, res) => {
         if (err) throw err;
         console.log('Viewing all departments');
-        console.table(res);
+        console.table(res.rows);
         questionsList();       
     });
 };
@@ -56,24 +70,22 @@ const viewAllRoles = () => {
     const query = `SELECT * FROM role`;
     pool.query(query, (err, res) => {
         if (err) throw err;
-        res.forEach(({title}) => rolesArray.push(title);
+        res.rows.forEach(({title}) => rolesArray.push(title));
         console.log('Viewing all roles');
-        console.table(res);
+        console.table(res.rows);
         questionsList();
     });
 };
 
 // Function to view all employees
 const viewAllEmployees = () => {
-    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(manager.first_name, " ", manager.last_name) AS manager
-    FROM employee
-    LEFT JOIN role ON employee.role_id = role.id
-    LEFT JOIN department ON role.department_id = department.id
-    LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+   
+    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, manager.first_name  AS manager_first_name, manager.last_name AS manager_last_name FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id
+    LEFT JOIN employee AS manager ON employee.manager_id = manager.id`;
     pool.query(query, (err, res) => {
         if (err) throw err;
         console.log('Viewing all employees');
-        console.table(res);
+        console.table(res.rows);
         questionsList();
     });
 };
@@ -87,7 +99,7 @@ const addDepartment = () => {
             message: "What is the name of the department?",
         }
     ]).then(answers => {
-        const query = `INSERT INTO department (name) VALUES (?)`;
+        const query = `INSERT INTO department (name) VALUES ($1)`;
         pool.query(query, [answers.department], (err, res) => {
             if (err) throw err;
             console.log('Department added');
@@ -115,7 +127,7 @@ const addRole = () => {
             message: "What is the department id?",
         },
     ]).then(answers => {
-        const query = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+        const query = `INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)`;
         pool.query(query, [answers.role, answers.salary, answers.departmentId], (err, res) => {
             if (err) throw err;
             console.log('Role added');
@@ -148,7 +160,7 @@ const addEmployee = () => {
             message: "What is employee's manager id?",
         },
     ]).then(answers => {
-        const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+        const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`;
         pool.query(query, [answers.firstName, answers.lastName, answers.roleId, answers.managerId], (err, res) => {
             if (err) throw err;
             console.log('Employee added');
@@ -171,7 +183,7 @@ const updateEmployeeRole = () => {
             message: "What is the employee's new role?",
         }
     ]).then(answers => {
-        const query = `UPDATE employee SET role_id = ? WHERE id = ?`;
+        const query = `UPDATE employee SET role_id = $1 WHERE id = $2`;
         pool.query(query, [answers.employeeTitle, answers.employeeId], (err, res) => {
             if (err) throw err;
             console.log('Employee role updated');
@@ -179,3 +191,5 @@ const updateEmployeeRole = () => {
         });
     });
 };
+
+questionsList();

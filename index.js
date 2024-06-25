@@ -80,8 +80,7 @@ const viewAllRoles = () => {
 // Function to view all employees
 const viewAllEmployees = () => {
    
-    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, CONCAT(manager.first_name, ' ', manager.last_name) AS manager  FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id
-    LEFT JOIN employee AS manager ON employee.manager_id = manager.id`;
+    const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, COALESCE(manager.first_name || ' ' || manager.last_name, 'NULL') AS manager  FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS manager ON employee.manager_id = manager.id`;
     pool.query(query, (err, res) => {
         if (err) throw err;
         console.log('Viewing all employees');

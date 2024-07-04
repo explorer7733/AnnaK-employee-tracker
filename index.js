@@ -2,13 +2,15 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const { Pool } = require("pg");
 
+require('dotenv').config()
+
 // Connect to database
 const pool = new Pool(
   {
-    user: 'postgres',
-    password: '',
-    host: 'localhost',
-    database: 'employees_db'
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    host: process.env.HOST,
+    database: process.env.DATABASE 
   },
 )
 pool.connect();

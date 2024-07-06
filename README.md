@@ -19,7 +19,7 @@ Answer the prompts in the terminal
 
 To review "AnnaK-employee-tracker", you can click on the link to the walkthrough video and the screenshot link below.
 
-![Link to my video](https://drive.google.com/file/d/11L50nW-S9lbIprPzJFdG9A-glOb9HIKy/view?usp=sharing)
+![Link to my video](https://drive.google.com/file/d/11L50nW-S9lbIprPzJFdG9A-glOb9HIKy/view)
 
 ## Screenshots
 
